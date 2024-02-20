@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,7 @@ public class DepartmentController {
 
     //save department REST API
     @PostMapping
-    public ResponseEntity<DepartmentDto> createDept(@RequestBody DepartmentDto departmentDto){
+    public ResponseEntity<DepartmentDto> createDept(@RequestBody @Validated DepartmentDto departmentDto){
         DepartmentDto saveDept = departmentService.saveDept(departmentDto);
         return new ResponseEntity<>(saveDept, HttpStatus.CREATED);
     }
