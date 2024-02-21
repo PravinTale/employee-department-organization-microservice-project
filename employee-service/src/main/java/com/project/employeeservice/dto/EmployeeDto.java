@@ -9,7 +9,6 @@ import org.hibernate.boot.archive.scan.internal.ScanResultImpl;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class EmployeeDto {
     private Long id;
     @NotEmpty(message = "Employee first name can not be empty or null")
@@ -21,7 +20,6 @@ public class EmployeeDto {
     @NotEmpty(message = "Employee email can not be empty or null")
     @Email(message = "Employee email should be valid")
     private String email;
-
-
+    @NotEmpty(message = "deptCode can not be empty or null")
     private String deptCode;
 }

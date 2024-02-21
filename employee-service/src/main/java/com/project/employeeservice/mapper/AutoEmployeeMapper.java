@@ -11,5 +11,5 @@ public interface AutoEmployeeMapper {
 
     Employee mapToEmployee(EmployeeDto employeeDto);
     EmployeeDto mapToEmployeeDto(Employee employee);
-}
 
+}

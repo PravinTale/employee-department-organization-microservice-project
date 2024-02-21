@@ -14,11 +14,15 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "fname", nullable = false)
     private String firstName;
+    @Column(name = "lname", nullable = false)
     private String lastName;
-    @Column(nullable = false,unique = true)
+
+    @Column(name = "email", nullable = false,unique = true)
     private String email;
 
+    @Column(name = "deptCode", nullable = false)
     private String deptCode;
 
 }
