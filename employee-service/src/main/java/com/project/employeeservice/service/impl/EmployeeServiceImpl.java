@@ -10,15 +10,16 @@ import com.project.employeeservice.mapper.AutoEmployeeMapperImpl;
 import com.project.employeeservice.repository.EmployeeRepository;
 import com.project.employeeservice.service.APIClient;
 import com.project.employeeservice.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private EmployeeRepository employeeRepo;
     //private RestTemplate restTemplate;
@@ -40,8 +41,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return saveEmpDto;
     }
 
+    @CircuitBreaker(name = "${spring.application.name}",fallbackMethod = "getDefaultDepartment")
     @Override
     public ApiResponseDto getEmployeeById(Long empId) {
+
+        LOGGER.info("inside getEmployeeById() method");
+
         Employee employee = employeeRepo.findById(empId).orElseThrow(
                 ()-> new ResourceNotFoundException("Employee","id",empId)
         );
@@ -85,5 +90,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
         return apiResponseDto;
 
+    }
+
+    public ApiResponseDto getDefaultDepartment(Long empId, Exception exception){
+
+        LOGGER.info("inside getDefaultDepartment() method");
+
+        Employee employee = employeeRepo.findById(empId).get();
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setDeptCode("Def101");
+        departmentDto.setDeptName("Default department");
+        departmentDto.setDeptDescription("This is default department");
+
+        EmployeeDto employeeDto = AutoEmployeeMapper.MAPPER.mapToEmployeeDto(employee);
+
+
+        ApiResponseDto apiResponseDto = new ApiResponseDto(
+                employeeDto,
+                departmentDto
+        );
+        return apiResponseDto;
     }
 }
