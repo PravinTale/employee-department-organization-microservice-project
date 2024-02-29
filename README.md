@@ -2,10 +2,11 @@
 
 <H2> Swagger UI documentation of Services</H2>
 <h5> Department Service :</h5>
-URL: [http://localhost:8080/swagger-ui/index.html#/]
+[Department Service ](http://localhost:8080/swagger-ui/index.html#/)
+ 
 
 <h5>Employee Service :</h5>
-URL: [http://localhost:80801/swagger-ui/index.html#/]
+[Employee Service ](http://localhost:8081/swagger-ui/index.html#/)
 
 <h5> Organisation Service :</h5>
-URL: [http://localhost:8084/swagger-ui/index.html#/]
+[Organisation Service ](http://localhost:8084/swagger-ui/index.html#/)
