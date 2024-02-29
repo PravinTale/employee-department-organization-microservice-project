@@ -1,21 +1,15 @@
-# employee-department-organization-microservice-project
+# Employee Department Organization Microservice Project
 
-<H2> Swagger UI documentation of Services</H2>
+## Swagger UI Documentation of Services
 
+### Department Service
+- Link to Swagger: [Department Service Swagger](http://localhost:8080/swagger-ui/index.html#/)
 
+### Employee Service
+- Link to Swagger: [Employee Service Swagger](http://localhost:8081/swagger-ui/index.html#/)
 
-Some Endpoints to access the functionalities
---------------------------------------------
+### Organization Service
+- Link to Swagger: [Organization Service Swagger](http://localhost:8084/swagger-ui/index.html#/)
 
-<h5> Department Service :</h5>
-Link to Swagger: http://localhost:8080/swagger-ui/index.html#/
+## Thank You
 
-<h5> Employee Service :</h5>
-Link to Swagger: http://localhost:8081/swagger-ui/index.html#/
-
-<h5> Orgnaisation Service :</h5>
-Link to Swagger: http://localhost:8084/swagger-ui/index.html#/
-
-
-THANK YOU 
----------
