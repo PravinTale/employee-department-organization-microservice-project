@@ -3,22 +3,27 @@ package com.project.employeeservice.service.impl;
 import com.project.employeeservice.dto.ApiResponseDto;
 import com.project.employeeservice.dto.DepartmentDto;
 import com.project.employeeservice.dto.EmployeeDto;
+import com.project.employeeservice.dto.OrganisationDto;
 import com.project.employeeservice.entity.Employee;
 import com.project.employeeservice.exception.ResourceNotFoundException;
 import com.project.employeeservice.mapper.AutoEmployeeMapper;
 import com.project.employeeservice.mapper.AutoEmployeeMapperImpl;
 import com.project.employeeservice.repository.EmployeeRepository;
 import com.project.employeeservice.service.APIClient;
+import com.project.employeeservice.service.APIClientOrg;
 import com.project.employeeservice.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private EmployeeRepository employeeRepo;
     //private RestTemplate restTemplate;
@@ -27,6 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private APIClient apiClient;
 
+    private APIClientOrg apiClientOrg;
 
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
@@ -40,8 +46,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return saveEmpDto;
     }
 
+    @CircuitBreaker(name = "${spring.application.name}",fallbackMethod = "getDefaultDepartment")
     @Override
     public ApiResponseDto getEmployeeById(Long empId) {
+
+        LOGGER.info("inside getEmployeeById() method");
+
         Employee employee = employeeRepo.findById(empId).orElseThrow(
                 ()-> new ResourceNotFoundException("Employee","id",empId)
         );
@@ -75,15 +85,45 @@ public class EmployeeServiceImpl implements EmployeeService {
         //Using feignClient
 
         DepartmentDto departmentDto = apiClient.getDepartment(employee.getDeptCode());
+        OrganisationDto organisationDto = apiClientOrg.getOrganisation(employee.getOrgCode());
+
 
         EmployeeDto employeeDto = AutoEmployeeMapper.MAPPER.mapToEmployeeDto(employee);
 
         //Inorder to send 2 objects(i.e employeeDto and departmentDto)as a response, we are using ApiResponseDto
         ApiResponseDto apiResponseDto = new ApiResponseDto(
                 employeeDto,
-                departmentDto
+                departmentDto,
+                organisationDto
         );
         return apiResponseDto;
 
+    }
+
+    public ApiResponseDto getDefaultDepartment(Long empId, Exception exception){
+
+        LOGGER.info("inside getDefaultDepartment() method");
+
+        Employee employee = employeeRepo.findById(empId).get();
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setDeptCode("Def101");
+        departmentDto.setDeptName("Default department");
+        departmentDto.setDeptDescription("This is default department");
+
+        OrganisationDto organisationDto = new OrganisationDto();
+        organisationDto.setOrganisationCode("DefOrg100");
+        organisationDto.setOrganisationDescription("Default Organisation");
+        organisationDto.setOrganisationName("Default organisation");
+        organisationDto.setCreatedDate(LocalDateTime.now());
+
+        EmployeeDto employeeDto = AutoEmployeeMapper.MAPPER.mapToEmployeeDto(employee);
+
+
+        ApiResponseDto apiResponseDto = new ApiResponseDto(
+                employeeDto,
+                departmentDto,
+                organisationDto
+        );
+        return apiResponseDto;
     }
 }
